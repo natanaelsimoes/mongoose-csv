@@ -15,7 +15,7 @@ var CsvBuilder = require('csv-builder');
  * @param {Object} options.virtuals Virtual properties.
  */
 
-module.exports = function mongooseToCsv(schema, options) {
+function mongooseToCsv(schema, options) {
   // need options.headers
   if (!options.headers) throw new Error('MongooseToCsv requires the `headers` option');
   var builder = new CsvBuilder(options);
@@ -60,4 +60,8 @@ module.exports = function mongooseToCsv(schema, options) {
   schema.static('csvTransformStream', function() {
     return builder.createTransformStream();
   });
-};
+}
+
+module.exports = {
+  mongooseToCsv
+}
