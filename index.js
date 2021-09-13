@@ -63,5 +63,5 @@ function mongooseToCsv(schema, options) {
 }
 
 module.exports = {
-  mongooseToCsv
-}
+  mongooseToCsv,
+};
