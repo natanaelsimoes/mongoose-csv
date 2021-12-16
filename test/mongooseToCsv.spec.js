@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var mongooseToCsv = require('../');
+var { mongooseToCsv } = require('../');
 var TestStream = require('testable-stream');
 var seeds = require('./users.json');
 var fs = require('fs');
@@ -10,24 +10,24 @@ var conn = mongoose.connect('mongodb://localhost/__mongoose_to_csv_test__');
 var assert = require('assert');
 
 var TestSchema = new mongoose.Schema({
-  fullname: {type: String},
-  email: {type: String},
-  age: {type: Number},
-  username: {type: String}
+  fullname: { type: String },
+  email: { type: String },
+  age: { type: Number },
+  username: { type: String }
 });
 
 TestSchema.plugin(mongooseToCsv, {
   headers: 'Firstname Lastname Username Email Age',
-  constraints: {
+  alias: {
     'Username': 'username',
     'Email': 'email',
     'Age': 'age'
   },
   virtuals: {
-    'Firstname': function(doc) {
+    'Firstname': function (doc) {
       return doc.fullname.split(' ')[0];
     },
-    'Lastname': function(doc) {
+    'Lastname': function (doc) {
       return doc.fullname.split(' ')[1];
     }
   }
@@ -35,47 +35,45 @@ TestSchema.plugin(mongooseToCsv, {
 
 var Test = mongoose.model('Test', TestSchema);
 
-describe('mongooseToCsv', function() {
+describe('mongooseToCsv', function () {
 
-  before(function(done) {
-    Test.collection.insert(seeds, function(err, docs) {
-      if (err) return done(err);
-      done();
-    });
+  before(async () => {
+    await Test.create(seeds);
   });
 
-  after(function() {
-    conn.connection.db.dropDatabase();
+  after(async () => {
+    await Test.deleteMany({}).exec();
+    mongoose.connection.close();
   });
 
-  it('should create a readable stream from a query.', function(done) {
-    Test.find({}, function(err, docs) {
+  it('should create a readable stream from a query.', function (done) {
+    Test.find({}, function (err, docs) {
       if (err) return done(err);
       Test.csvReadStream(docs)
         .pipe(TestStream())
-        .on('testable', function(data) {
+        .on('testable', function (data) {
           data.toString().should.equal(EXPECTED);
           done();
         });
     });
   });
 
-  it('should create a transorm stream.', function(done) {
-    Test.find({}).stream()
+  it('should create a transorm stream.', function (done) {
+    Test.find({}).cursor()
       .pipe(Test.csvTransformStream())
       .pipe(TestStream())
-      .on('testable', function(data) {
+      .on('testable', function (data) {
         data.toString().should.equal(EXPECTED);
         done();
       });
   });
 
-  it('should create a stream from a query', function(done) {
+  it('should create a stream from a query', function (done) {
     Test.findAndStreamCsv({
-      'age': {$lt: 40}
+      'age': { $lt: 40 }
     })
       .pipe(TestStream())
-      .on('testable', function(data) {
+      .on('testable', function (data) {
         data.toString().should.equal(EXPECTED_U_40);
         done();
       });

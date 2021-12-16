@@ -1,5 +1,5 @@
-# mongoose-to-csv
-MongooseToCsv is a mongoose plugin that creates a [`CsvBuilder`](https://github.com/nickpisacane/CsvBuilder) instance for your Schema.
+# mongoose-csv
+MongooseCsv is a mongoose plugin that creates a [`CsvBuilder`](https://github.com/nickpisacane/CsvBuilder) instance for your Schema.
 
 ## Usage
 ```js
@@ -12,7 +12,7 @@ var UserSchema = new mongoose.Schema({
 
 UserSchema.plugin(mongooseToCsv, {
   headers: 'Firstname Lastname Username Email Age',
-  constraints: {
+  alias: {
     'Username': 'username',
     'Email': 'email',
     'Age': 'age'
@@ -52,7 +52,9 @@ User.find({})
 
 ## Installation
 ```sh
-$ npm install mongoose-to-csv
+$ npm install mongoose-csv
+# OR
+$ yarn add mongoose-csv
 ```
 
 ## Testing
