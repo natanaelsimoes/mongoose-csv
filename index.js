@@ -9,16 +9,16 @@ var CsvBuilder = require('csv-builder');
  * @param {mongoose.Schema} schema
  * @param {Object} options CsvBuilder options
  * @param {String|Array} options.headers Space separated headers, or array of headers
- * @param {String} [options.delimiter = ','] Value delimiter for csv data
+ * @param {String} [options.delimiter = ';'] Value delimiter for csv data
  * @param {String} [options.terminator = '\n'] Line terminator for csv data
- * @param {Object} options.constraints {"header": "prop"}
+ * @param {Object} options.alias {"header": "prop"}
  * @param {Object} options.virtuals Virtual properties.
  */
 
 function mongooseToCsv(schema, options) {
   // need options.headers
   if (!options.headers) throw new Error('MongooseToCsv requires the `headers` option');
-  var builder = new CsvBuilder(options);
+  var builder = new CsvBuilder({ delimiter: ';', ...options });
   if (options.virtuals) {
     for (var v in options.virtuals) {
       builder.virtual(v, options.virtuals[v]);
@@ -31,11 +31,11 @@ function mongooseToCsv(schema, options) {
    * @return {Stream} Csv read stream.
    */
 
-  schema.static('csvReadStream', function(docs) {
+  schema.static('csvReadStream', function (docs) {
     if (!docs) {
       throw new Error('[Model].csvReadStream requires an array of documents.');
     }
-    var data = docs.map(function(obj) {
+    var data = docs.map(function (obj) {
       return obj._doc;
     });
     return builder.createReadStream(data);
@@ -47,9 +47,9 @@ function mongooseToCsv(schema, options) {
    * @return {Stream} Csv transform stream
    */
 
-  schema.static('findAndStreamCsv', function(query) {
+  schema.static('findAndStreamCsv', function (query) {
     query = query || {};
-    return this.find(query).stream().pipe(builder.createTransformStream());
+    return this.find(query).cursor().pipe(builder.createTransformStream());
   });
 
   /**
@@ -57,7 +57,7 @@ function mongooseToCsv(schema, options) {
    * @return {Stream} transform stream
    */
 
-  schema.static('csvTransformStream', function() {
+  schema.static('csvTransformStream', function () {
     return builder.createTransformStream();
   });
 }
