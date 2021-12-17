@@ -1,5 +1,5 @@
 {
-  "name": "mongoose-csv",
+  "name": "mongoose-csv-export",
   "version": "1.0.0-alpha.0",
   "author": "Natanael Simões <natanael.simoes@logicamente.info> (https://logicamente.info)",
   "description": "Export mongoose queries as CSV streams.",

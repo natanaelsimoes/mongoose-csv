@@ -5,7 +5,7 @@ This is a mongoose plugin that creates a [`CsvBuilder`](https://github.com/nickp
 ```ts
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import csv from 'mongoose-csv';
+import csv from 'mongoose-csv-export';
 import fs from 'fs';
 
 interface IUserSchema extends mongoose.Document {
@@ -73,9 +73,9 @@ app.listen(5000);
 
 ## Installation
 ```sh
-$ npm install mongoose-csv
+$ npm install mongoose-csv-export
 # OR
-$ yarn add mongoose-csv
+$ yarn add mongoose-csv-export
 ```
 
 ## Testing
