@@ -43,7 +43,9 @@ describe("mongoose-csv", function () {
 
     Test = model("Test", TestSchema);
 
-    await Test.create(seeds);
+    for(const user of seeds) {
+      await Test.create(user);
+    }
 
     expected = await fs.readFile(__dirname + "/expected.csv", {
       encoding: "utf8",
@@ -102,5 +104,20 @@ describe("mongoose-csv", function () {
         expect(data.toString()).toBe(expectedUnder40);
         done();
       });
+  });
+
+  it("should accept common json like aggregate result", (done) => {
+    Test.aggregate([
+      {
+        $match: { age: { $lt: 40 } },
+      },
+    ]).then((docs) => {
+      Test.csvReadStream(docs)
+        .pipe(TestStream())
+        .on("testable", (data: Buffer) => {
+          expect(data.toString()).toBe(expectedUnder40);
+          done();
+        });
+    });
   });
 });
