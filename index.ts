@@ -14,7 +14,7 @@ export default function csv(schema: Schema, options: CsvBuilderOptions) {
   const builder = new CsvBuilder({ delimiter: ";", ...options });
 
   schema.static("csvReadStream", function (docs: Document[]) {
-    const data = docs.map((d) => d.toJSON());
+    const data = docs.map((d) => d.toJSON ? d.toJSON() : d);
     return builder.createReadStream(data);
   });
 
